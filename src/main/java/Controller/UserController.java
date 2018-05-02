@@ -1,5 +1,6 @@
 package Controller;
 
+import Model.Device;
 import Model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,10 +16,12 @@ import java.util.List;
 public class UserController {
 
     private final UserRepository userRepository;
+    private final DeviceRepository deviceRepository;
 
     @Autowired
     public UserController(UserRepository userRepository, DeviceRepository deviceRepository) {
         this.userRepository = userRepository;
+        this.deviceRepository = deviceRepository;
     }
 
     /**
@@ -37,7 +40,7 @@ public class UserController {
      * @return The User corresponding to the given ID, or an error if no match is found.
      */
     @GetMapping("/users/get")
-    public User getUserById(@RequestParam(value = "id") String id) {
+    public User getUserById(@RequestParam("id") String id) {
         if (!userRepository.existsById(id)) {
             // TODO error handling
         }
@@ -50,8 +53,10 @@ public class UserController {
      * @return the User that was added.
      */
     @GetMapping("/users/add")
-    public User insertUser(@RequestParam(value = "name") String name) {
-        return userRepository.save(new User(name));
+    public User addUser(@RequestParam("name") String name, @RequestParam("deviceName") String deviceName) {
+        User newUser = userRepository.save(new User(name));
+        deviceRepository.save(new Device(deviceName, newUser.getId()));
+        return newUser;
     }
 
     /**
@@ -61,7 +66,7 @@ public class UserController {
      * @return the updated User
      */
     @GetMapping("/users/update")
-    public User updateUser(@RequestParam(value = "id") String id, @RequestParam(value = "name", defaultValue = "") String name){
+    public User updateUser(@RequestParam("id") String id, @RequestParam(value = "name", defaultValue = "") String name){
         if (!userRepository.existsById(id)) {
             // TODO error handling
         }
@@ -77,14 +82,14 @@ public class UserController {
      * @return the removed User for information to be preserved.
      */
     @GetMapping("/users/remove")
-    public User removeUser(@RequestParam(value = "id") String id) {
+    public User removeUser(@RequestParam("id") String id) {
         if (!userRepository.existsById(id)) {
             // TODO error handling
         }
-        // TODO find a better message to output after removing user
-        User user = userRepository.findById(id).orElse(null);
+        // TODO find a better message to output after removing removedUser
+        User removedUser = userRepository.findById(id).orElse(null);
         userRepository.deleteById(id);
-        return user;
+        return removedUser;
     }
 
 

@@ -35,7 +35,7 @@ public class DeviceController {
     }
 
     @GetMapping("/devices/get")
-    public List<Device> getDevices(@RequestParam(value = "userId") String userId) {
+    public List<Device> getDevices(@RequestParam("userId") String userId) {
         if (!userRepository.existsById(userId)) {
             // TODO error handling
         }
@@ -44,19 +44,39 @@ public class DeviceController {
         return devices;
     }
 
-    /**
-     * Adds a new device with the given name associated with the given User ID.
-     * @param name the name of the device
-     * @param userId the User ID associated with the device
-     * @return the Device that was added
+    /*
+     * Note: Adding Devices is handled by a separate controller for Device authentication and validation.
      */
-    @GetMapping("/devices/add")
-    public Device addDevice(@RequestParam(value =
-            "name") String name, @RequestParam(value = "userId") String userId) {
-        if (!userRepository.existsById(userId)) {
+
+    /**
+     * Changes the Device's diaplay name.
+     * @param id the ID of the Device to be modified
+     * @param name the new display name
+     * @return the Device that was modified
+     */
+    @GetMapping("/devices/update")
+    public Device updateDevice(@RequestParam("id") String id, @RequestParam(value = "name", defaultValue = "") String name) {
+        if (!userRepository.existsById(id)) {
             // TODO error handling
         }
-        return deviceRepository.save(new Device(name, userId));
+        Device device = deviceRepository.findById(id).orElse(null);
+        device.setName(name);
+        return deviceRepository.save(device);
+    }
+
+    /**
+     * Removes a device with the given ID.
+     * @param id the ID associated with the device
+     * @return the Device that was removed
+     */
+    @GetMapping("/devices/remove")
+    public Device removeDevice(@RequestParam("id") String id) {
+        if (!deviceRepository.existsById(id)) {
+            // TODO error handling
+        }
+        Device removedDevice = deviceRepository.findById(id).orElse(null);
+        deviceRepository.deleteById(id);
+        return removedDevice;
     }
 
 
