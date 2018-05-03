@@ -1,7 +1,10 @@
-package Model;
+package model;
 
 import java.time.ZoneOffset;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class DeviceTokenAuthenticator {
     private static Random random = new Random();
@@ -11,7 +14,8 @@ public class DeviceTokenAuthenticator {
     // maps DeviceTokens to corresponding users
     private Map<DeviceToken, User> tokenMap;
     // sets how long tokens are valid in seconds
-    int tokenDuration;
+    private int tokenDuration;
+
 
     /**
      * Creates a new DeviceTokenAuthenticator with the given token duration.
@@ -21,6 +25,8 @@ public class DeviceTokenAuthenticator {
     public DeviceTokenAuthenticator(int tokenDuration) {
         this.tokenDuration = tokenDuration;
         tokenMap = new HashMap<DeviceToken, User>();
+        ScheduledExecutorService tokenCleanerService = Executors.newScheduledThreadPool(1);
+        tokenCleanerService.scheduleWithFixedDelay(new DeviceTokenCleaner(tokenMap), 60, 1200, TimeUnit.SECONDS);
     }
 
     /**
@@ -62,7 +68,7 @@ public class DeviceTokenAuthenticator {
     public DeviceToken issueToken(User user) {
         DeviceToken token = new DeviceToken(generatePin(), generateAuthenticationCode());
         tokenMap.put(token, user);
-        return token.clone();
+        return token;
     }
 
     /**
@@ -114,5 +120,31 @@ public class DeviceTokenAuthenticator {
             authenticationCode.append(alphabet.charAt(alphabetIndex));
         }
         return authenticationCode.toString();
+    }
+
+    private class DeviceTokenCleaner implements Runnable {
+        // tokenMap to clean
+        private Map<DeviceToken, User> tokenMap;
+
+        /**
+         * Creates a new {@link DeviceTokenCleaner} with the given tokenMap.
+         * @param tokenMap the tokenMap to clean
+         */
+        public DeviceTokenCleaner(Map<DeviceToken, User> tokenMap) {
+            this.tokenMap = tokenMap;
+        }
+
+        /**
+         * Cleans expired tokens.
+         */
+        @Override
+        public void run() {
+            Iterator<DeviceToken> tokenIterator = tokenMap.keySet().iterator();
+            while (tokenIterator.hasNext()) {
+                if (isExpired(tokenIterator.next())) {
+                    tokenIterator.remove();
+                }
+            }
+        }
     }
 }

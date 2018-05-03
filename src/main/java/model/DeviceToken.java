@@ -1,4 +1,4 @@
-package Model;
+package model;
 
 import java.time.ZoneOffset;
 import java.util.Calendar;
@@ -53,14 +53,6 @@ public class DeviceToken {
      */
     public Calendar getTimestamp() {
         return (Calendar) timestamp.clone();
-    }
-
-    /**
-     * Returns a copy of this DeviceToken.
-     * @return a copy of this DeviceToken
-     */
-    public DeviceToken clone() {
-        return new DeviceToken(pin, authenticationCode, timestamp);
     }
 
     /**

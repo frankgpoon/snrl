@@ -1,4 +1,4 @@
-package Model;
+package model;
 
 import org.springframework.data.annotation.Id;
 
@@ -7,8 +7,8 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 /**
- * A Model.Device represents a single device belonging to a Model.User. It consists of a unique id for identification
- * and a device name set by the Model.User.
+ * A model.Device represents a single device belonging to a model.User. It consists of a unique id for identification
+ * and a device name set by the model.User.
  */
 public class Device implements Comparable<Device> {
 
@@ -24,7 +24,7 @@ public class Device implements Comparable<Device> {
     private Calendar dateCreated;
 
     /**
-     * Creates a new Model.Device from the given id, name, and type
+     * Creates a new model.Device from the given id, name, and type
      *
      * @param name A name for the user to identify the device. It can be changed.
      */

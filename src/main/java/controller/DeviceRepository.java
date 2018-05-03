@@ -1,6 +1,6 @@
-package Controller;
+package controller;
 
-import Model.Device;
+import model.Device;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;

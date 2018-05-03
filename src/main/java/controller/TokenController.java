@@ -1,8 +1,8 @@
-package Controller;
+package controller;
 
-import Model.Device;
-import Model.DeviceToken;
-import Model.DeviceTokenAuthenticator;
+import model.Device;
+import model.DeviceToken;
+import model.DeviceTokenAuthenticator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;

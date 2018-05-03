@@ -1,16 +1,13 @@
-package Controller;
+package controller;
 
-import Model.Device;
-import Model.User;
+import model.Device;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 public class DeviceController {
@@ -49,14 +46,14 @@ public class DeviceController {
      */
 
     /**
-     * Changes the Device's diaplay name.
+     * Changes the Device's display name.
      * @param id the ID of the Device to be modified
      * @param name the new display name
      * @return the Device that was modified
      */
     @GetMapping("/devices/update")
     public Device updateDevice(@RequestParam("id") String id, @RequestParam(value = "name", defaultValue = "") String name) {
-        if (!userRepository.existsById(id)) {
+        if (!deviceRepository.existsById(id)) {
             // TODO error handling
         }
         Device device = deviceRepository.findById(id).orElse(null);

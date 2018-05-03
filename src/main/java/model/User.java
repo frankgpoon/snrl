@@ -1,4 +1,4 @@
-package Model;
+package model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -7,8 +7,8 @@ import java.time.ZoneOffset;
 import java.util.*;
 
 /**
- * A Model.User is a class for unique users of Unifeed. A Model.User consists of a unique id to identify them, a display name for
- * them to use, and devices belonging to that Model.User.
+ * A model.User is a class for unique users of Unifeed. A model.User consists of a unique id to identify them, a display name for
+ * them to use, and devices belonging to that model.User.
  */
 @Document
 public class User {
@@ -22,7 +22,7 @@ public class User {
 
 
     /**
-     * Creates a new Model.User with the given id and name.
+     * Creates a new model.User with the given id and name.
      *
      * @param name The display name of the user. It can be changed.
      */

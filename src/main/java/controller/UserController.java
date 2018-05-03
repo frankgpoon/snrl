@@ -1,7 +1,7 @@
-package Controller;
+package controller;
 
-import Model.Device;
-import Model.User;
+import model.Device;
+import model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -9,12 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RestController
 /**
  * UserController handles all REST operations pertaining to adding, viewing, updating, or removing users.
  */
+@RestController
 public class UserController {
-
     private final UserRepository userRepository;
     private final DeviceRepository deviceRepository;
 
