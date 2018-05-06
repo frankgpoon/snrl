@@ -3,8 +3,10 @@ package controller;
 import model.Device;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
+import util.DeviceRepository;
+import util.UserRepository;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,13 +28,13 @@ public class DeviceController {
      * TODO fix this to require developer authentication
      * @return A list of all devices
      */
-    @GetMapping("/devices/all")
+    @GetMapping(value = "/devices/all", produces = "application/json; charset=UTF-8")
     public List<Device> getAllDevices() {
         return deviceRepository.findAll();
     }
 
-    @GetMapping("/devices/get")
-    public List<Device> getDevices(@RequestParam("userId") String userId) {
+    @GetMapping(value = "/devices/get", produces = "application/json; charset=UTF-8")
+    public List<Device> getDevices(@RequestHeader("User-Id") String userId) {
         if (!userRepository.existsById(userId)) {
             // TODO error handling
         }
@@ -47,32 +49,32 @@ public class DeviceController {
 
     /**
      * Changes the Device's display name.
-     * @param id the ID of the Device to be modified
-     * @param name the new display name
+     * @param deviceId the ID of the Device to be modified
+     * @param deviceName the new display name
      * @return the Device that was modified
      */
-    @GetMapping("/devices/update")
-    public Device updateDevice(@RequestParam("id") String id, @RequestParam(value = "name", defaultValue = "") String name) {
-        if (!deviceRepository.existsById(id)) {
+    @GetMapping(value = "/devices/update", produces = "application/json; charset=UTF-8")
+    public Device updateDevice(@RequestHeader("Device-Id") String deviceId, @RequestHeader("Device-Name") String deviceName) {
+        if (!deviceRepository.existsById(deviceId)) {
             // TODO error handling
         }
-        Device device = deviceRepository.findById(id).orElse(null);
-        device.setName(name);
+        Device device = deviceRepository.findById(deviceId).orElse(null);
+        device.setName(deviceName);
         return deviceRepository.save(device);
     }
 
     /**
      * Removes a device with the given ID.
-     * @param id the ID associated with the device
+     * @param deviceId the ID associated with the device
      * @return the Device that was removed
      */
-    @GetMapping("/devices/remove")
-    public Device removeDevice(@RequestParam("id") String id) {
-        if (!deviceRepository.existsById(id)) {
+    @GetMapping(value = "/devices/remove", produces = "application/json; charset=UTF-8")
+    public Device removeDevice(@RequestHeader("Device-Id") String deviceId) {
+        if (!deviceRepository.existsById(deviceId)) {
             // TODO error handling
         }
-        Device removedDevice = deviceRepository.findById(id).orElse(null);
-        deviceRepository.deleteById(id);
+        Device removedDevice = deviceRepository.findById(deviceId).orElse(null);
+        deviceRepository.deleteById(deviceId);
         return removedDevice;
     }
 

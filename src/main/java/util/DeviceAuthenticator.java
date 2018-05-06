@@ -1,4 +1,7 @@
-package model;
+package util;
+
+import model.DeviceToken;
+import model.User;
 
 import java.time.ZoneOffset;
 import java.util.*;
@@ -10,53 +13,20 @@ public class DeviceTokenAuthenticator {
     private static Random random = new Random();
     private static final int MAX_PIN_COMBINATIONS = 1000000;
     private static final int AUTH_CODE_LENGTH = 4;
+    private static final int TOKEN_DURATION = 300;
 
     // maps DeviceTokens to corresponding users
     private Map<DeviceToken, User> tokenMap;
     // sets how long tokens are valid in seconds
-    private int tokenDuration;
 
 
     /**
-     * Creates a new DeviceTokenAuthenticator with the given token duration.
-     *
-     * @param tokenDuration the number of seconds a token is valid for.
+     * Creates a new DeviceTokenAuthenticator.
      */
-    public DeviceTokenAuthenticator(int tokenDuration) {
-        this.tokenDuration = tokenDuration;
+    public DeviceTokenAuthenticator() {
         tokenMap = new HashMap<DeviceToken, User>();
         ScheduledExecutorService tokenCleanerService = Executors.newScheduledThreadPool(1);
         tokenCleanerService.scheduleWithFixedDelay(new DeviceTokenCleaner(tokenMap), 60, 1200, TimeUnit.SECONDS);
-    }
-
-    /**
-     * Returns the token duration.
-     * @return the token duration
-     */
-    public int getTokenDuration() {
-        return tokenDuration;
-    }
-
-    /**
-     * Gets the expiration datetime of a {@link DeviceToken}.
-     *
-     * @param token the token to get the expiration of
-     * @return the expiration datetime
-     */
-    public Calendar getExpiration(DeviceToken token) {
-        Calendar timestamp = token.getTimestamp();
-        timestamp.add(Calendar.SECOND, tokenDuration);
-        return timestamp;
-    }
-
-    /**
-     * Checks if a token is expired.
-     *
-     * @param token the token to check
-     * @return true if the token is expired, false otherwise
-     */
-    public boolean isExpired(DeviceToken token) {
-        return Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC)).compareTo(getExpiration(token)) >= 0;
     }
 
     /**
@@ -66,7 +36,7 @@ public class DeviceTokenAuthenticator {
      * @return the generated token
      */
     public DeviceToken issueToken(User user) {
-        DeviceToken token = new DeviceToken(generatePin(), generateAuthenticationCode());
+        DeviceToken token = new DeviceToken(generatePin(), generateAuthenticationCode(), TOKEN_DURATION);
         tokenMap.put(token, user);
         return token;
     }
@@ -88,7 +58,7 @@ public class DeviceTokenAuthenticator {
                     internalToken = token;
                 }
             }
-            return !isExpired(internalToken) && !isExpired(externalToken)
+            return internalToken.isExpired() && externalToken.isExpired()
                     && externalToken.getTimestamp().compareTo(internalToken.getTimestamp()) >= 0;
         }
         return false;
@@ -141,7 +111,7 @@ public class DeviceTokenAuthenticator {
         public void run() {
             Iterator<DeviceToken> tokenIterator = tokenMap.keySet().iterator();
             while (tokenIterator.hasNext()) {
-                if (isExpired(tokenIterator.next())) {
+                if (tokenIterator.next().isExpired()) {
                     tokenIterator.remove();
                 }
             }

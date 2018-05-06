@@ -2,11 +2,11 @@ package controller;
 
 import model.Device;
 import model.DeviceToken;
-import model.DeviceTokenAuthenticator;
+import util.DeviceRepository;
+import util.DeviceTokenAuthenticator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import util.UserRepository;
 
 @RestController
 public class TokenController {
@@ -21,7 +21,7 @@ public class TokenController {
         this.deviceRepository = deviceRepository;
     }
 
-    @GetMapping("/devices/add")
+    @GetMapping(value = "/devices/add", produces = "application/json; charset=UTF-8")
     public DeviceToken addDevice(@RequestParam("userId") String userId) {
         if (!userRepository.existsById(userId)) {
             // TODO error handling
@@ -29,8 +29,8 @@ public class TokenController {
         return authenticator.issueToken(userRepository.findById(userId).orElse(null));
     }
 
-    @GetMapping("/devices/authenticate")
-    public Device authenticateDevice(@RequestParam("pin") String pinStr, @RequestParam("authenticationCode") String authenticationCode) {
+    @PostMapping(value = "/devices/authenticate", produces = "application/json; charset=UTF-8")
+    public Device authenticateDevice(@RequestHeader("Pin") String pinStr, @RequestHeader("Authentication-Code") String authenticationCode) {
         int pin = Integer.parseInt(pinStr);
         DeviceToken authenticationToken = new DeviceToken(pin, authenticationCode);
 
